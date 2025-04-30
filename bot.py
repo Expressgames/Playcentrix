@@ -3,6 +3,20 @@ from discord.ext import commands
 import json
 import os
 from datetime import datetime
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class KeepAliveHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b'Bot is running!')
+
+def run_server():
+    server = HTTPServer(('0.0.0.0', 8080), KeepAliveHandler)
+    server.serve_forever()
+
+threading.Thread(target=run_server).start()
 
 intents = discord.Intents.default()
 intents.message_content = True
